@@ -26,6 +26,12 @@ app.post('/webhook', express.json() ,function (req, res) {
   var arraySep = sessionId.split("/");
   const session = arraySep[arraySep.length-1];
   console.log(session);
+
+  //Variables prueba
+  var arrayVariables =  new Array(5);
+
+  //Agregando el dato al arreglo
+  arrayVariables.push(session)
   
   function welcome(agent) {
     //const senderID  = agent.request_.body.originalDetectIntentRequest.payload.data.sender.id
@@ -44,15 +50,34 @@ app.post('/webhook', express.json() ,function (req, res) {
     return axios.get('https://sheet.best/api/sheets/f6e22c14-a37d-4f1f-bb6a-4023af5cfdb5');
   }
 
+  function F_Datos(agent){
+    return 
+  }
+
   //Manda los datos a la hoja de calculo
   function F_Edad(agent) {
     let edad = agent.parameters["DatoEdad"];
     console.log(edad);
+    agent.add("Sin contar escolaridad trunca.¿De qué grado de estudios que ya hayas concluido tienes certificado?");
     axios.post("https://sheet.best/api/sheets/f6e22c14-a37d-4f1f-bb6a-4023af5cfdb5",{session,edad});
+    console.log("Datos enviados");
+    return edad;
+    //arrayVariables.push(edad);
+    //return arrayVariables;
     //Importante para que no se salte lineas en la hoja de calculo es necesario en el metodo post mandar todas las variables
-    agent.add("Dato guardado")
-    agent.add("Sin contar escolaridad trunca...¿De qué grado de estudios que ya hayas concluido tienes certificado?");
   }
+
+
+  console.log(arrayVariables);
+
+//   function F_EdadInvalida(agent){
+//     let edad = agent.parameters["DatoEdad"];
+//     agent.add("Por el momento no tengo alguna vacante en sistema que sea acorde a tu edad, pero te invitó a venir a nuestra sucursal para que te podamos asesorar sobre el procedimiento que llevamos con las vacantes, nos encontramos ubicados en C. P.º de Las Fresas #77, Jardines de Irapuato, 36660 Irapuato, Gto.📍");
+//     agent.add("También te invitó a seguirnos en nuestras redes sociales para que estés al tanto de las vacantes que estaremos subiendo https://www.facebook.com/LinkingBajio?mibextid=ZbWKwL");
+//     console.log(edad);
+//     axios.post("https://sheet.best/api/sheets/f6e22c14-a37d-4f1f-bb6a-4023af5cfdb5",{session,edad});
+//     console.log("Datos enviados");
+//   }
 
   //Funcion agregar datos personalizada
 //   function agregarDatos(){
@@ -61,38 +86,15 @@ app.post('/webhook', express.json() ,function (req, res) {
 //   }
 
  
-//DATOS
-/*function queryBDAgregarDatos(connection){
-  return new Promise((resolve, reject)=>{
-  //Variables
-  let edad = agent.parameters["DatoEdad"];
-  let localidad = agent.parameters["DatoLocalidad"];
-  let escolaridad = agent.parameters["DatoEscolaridad"];
-  let nombre = agent.parameters["DatoNombre"];
-//let edad = agent.parameters["DatoEdad"];
-//¿Qué consulta quiero hacer a mi BD?
-  connection.query(`INSERT INTO tablacandidatoschat (Edad, Escolaridad, Localidad, Nombre) VALUES (?,?,?,?)`,[edad, escolaridad, localidad, nombre],(error, results, fields) => {
-    resolve(results);
-  });
-})
-}
-function welcome(agent) {
-  return cnxBD()
-    .then(connection => {
-      return queryBDAgregarDatos(connection)
-    .then(result =>{
-      console.log(result);
-      agent.add(`Gracias, nos pondremos en contacto.`);
-      connection.end()
-     });
-   });
-}*/
 
   
   let intentMap = new Map();
   intentMap.set('Default Welcome Intent', welcome);
   intentMap.set('Default Fallback Intent', fallback);
   intentMap.set('Edad', F_Edad);
+
+  console.log(arrayVariables);
+  //intentMap.set('EdadInvalida',F_EdadInvalida);
   
   // intentMap.set('EscolaridadPrimaria', F_Escolaridad);
   // intentMap.set('EscolaridadSecundaria', F_Escolaridad);
@@ -133,8 +135,9 @@ function welcome(agent) {
   //intentMap.set('DefaultWelcomeIntent', MostrarDatos);
   //intentMap.set('Edad', MostrarDatos);
   agent.handleRequest(intentMap);
-  //agregarDatos();
 });
+
+
 //Víncula la aplicación al puerto de escucha de nuestra máquina
 app.listen(3000,() => {
     console.log("conect" + 3000);
